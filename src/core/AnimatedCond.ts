@@ -1,9 +1,10 @@
 import invariant from 'fbjs/lib/invariant';
-import { adapt } from '../core/AnimatedBlock';
+import { adapt } from './AnimatedBlock';
 import { val } from '../val';
 import AnimatedNode from './AnimatedNode';
+import { Value, Adaptable } from '../types';
 
-class AnimatedCond extends AnimatedNode {
+class AnimatedCond<T extends Value> extends AnimatedNode<T> {
   _condition;
   _ifBlock;
   _elseBlock;
@@ -48,7 +49,14 @@ class AnimatedCond extends AnimatedNode {
   }
 }
 
-export function createAnimatedCond(cond, ifBlock, elseBlock) {
+export function createAnimatedCond<
+  T1 extends Value = number,
+  T2 extends Value = number
+>(
+  cond: Adaptable<number>,
+  ifBlock: Adaptable<T1>,
+  elseBlock?: Adaptable<T2>
+): AnimatedNode<T1 | T2> {
   return new AnimatedCond(
     adapt(cond),
     adapt(ifBlock),

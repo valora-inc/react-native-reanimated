@@ -3,8 +3,9 @@ import { createAnimatedCallFunc } from './AnimatedCallFunc';
 import { createAnimatedParam } from './AnimatedParam';
 import { val } from '../val';
 import invariant from 'fbjs/lib/invariant';
+import { Adaptable, Value } from '../types';
 
-class AnimatedFunction extends AnimatedNode {
+class AnimatedFunction<T extends Value> extends AnimatedNode<T> {
   _what;
 
   constructor(what, ...params) {
@@ -32,12 +33,15 @@ class AnimatedFunction extends AnimatedNode {
   }
 }
 
-export function createAnimatedFunction(cb) {
+export function createAnimatedFunction<
+  T extends (Adaptable<Value> | undefined)[]
+>(cb: (...args: T) => AnimatedNode<number>): typeof cb {
   const params = new Array(cb.length);
   for (let i = 0; i < params.length; i++) {
     params[i] = createAnimatedParam();
   }
-  // eslint-disable-next-line standard/no-callback-literal
+
+  // @ts-ignore
   const what = cb(...params);
   const func = new AnimatedFunction(what, ...params);
   return (...args) => {

@@ -21,6 +21,7 @@ import {
   abs,
 } from '../base';
 import AnimatedValue from '../core/InternalAnimatedValue';
+import { Adaptable } from '../types';
 
 const MAX_STEPS_MS = 64;
 
@@ -168,6 +169,15 @@ const procSpring = proc(
     )
 );
 
+export interface SpringConfig {
+  damping: Adaptable<number>;
+  mass: Adaptable<number>;
+  stiffness: Adaptable<number>;
+  overshootClamping: Adaptable<number> | boolean;
+  restSpeedThreshold: Adaptable<number>;
+  restDisplacementThreshold: Adaptable<number>;
+  toValue: Adaptable<number>;
+}
 export default (
   clock,
   {
@@ -186,7 +196,7 @@ export default (
     overshootClamping,
     restDisplacementThreshold,
     restSpeedThreshold,
-  }
+  }: SpringConfig
 ) =>
   procSpring(
     finished,

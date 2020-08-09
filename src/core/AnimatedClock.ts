@@ -2,7 +2,7 @@ import InternalAnimatedValue from './InternalAnimatedValue';
 import AnimatedNode from './AnimatedNode';
 import { val } from '../val';
 
-class AnimatedMainClock extends InternalAnimatedValue {
+class AnimatedMainClock extends InternalAnimatedValue<number> {
   _frameCallback;
 
   constructor() {
@@ -38,7 +38,7 @@ class AnimatedMainClock extends InternalAnimatedValue {
 
 const mainClock = new AnimatedMainClock();
 
-export default class AnimatedClock extends AnimatedNode {
+class AnimatedClock extends AnimatedNode<number> {
   _started;
   _attached;
 
@@ -88,4 +88,4 @@ export default class AnimatedClock extends AnimatedNode {
     return this._started;
   }
 }
-
+export default AnimatedClock;

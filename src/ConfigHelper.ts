@@ -110,7 +110,9 @@ function configureProps() {
   );
 }
 
-export function addWhitelistedNativeProps(props) {
+export function addWhitelistedNativeProps(props: {
+  [key: string]: true;
+}): void {
   NATIVE_THREAD_PROPS_WHITELIST = {
     ...NATIVE_THREAD_PROPS_WHITELIST,
     ...props,
@@ -118,7 +120,7 @@ export function addWhitelistedNativeProps(props) {
   configureProps();
 }
 
-export function addWhitelistedUIProps(props) {
+export function addWhitelistedUIProps(props: { [key: string]: true }): void {
   UI_THREAD_PROPS_WHITELIST = { ...UI_THREAD_PROPS_WHITELIST, ...props };
   configureProps();
 }

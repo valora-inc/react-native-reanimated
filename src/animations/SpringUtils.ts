@@ -8,8 +8,10 @@ import {
   lessOrEq,
   and,
   greaterThan,
-} from './../base';
-import AnimatedValue from './../core/InternalAnimatedValue';
+} from '../base';
+import AnimatedValue from '../core/InternalAnimatedValue';
+import { SpringConfig } from './spring';
+import { Adaptable } from '../types';
 
 function stiffnessFromOrigamiValue(oValue) {
   return (oValue - 30) * 3.62 + 194;
@@ -26,8 +28,18 @@ function stiffnessFromOrigamiNode(oValue) {
 function dampingFromOrigamiNode(oValue) {
   return add(multiply(sub(oValue, 8), 3), 25);
 }
-
-function makeConfigFromOrigamiTensionAndFriction(prevConfig) {
+interface SpringConfigWithOrigamiTensionAndFriction {
+  tension: Adaptable<number>;
+  mass: Adaptable<number>;
+  friction: Adaptable<number>;
+  overshootClamping: Adaptable<number> | boolean;
+  restSpeedThreshold: Adaptable<number>;
+  restDisplacementThreshold: Adaptable<number>;
+  toValue: Adaptable<number>;
+}
+function makeConfigFromOrigamiTensionAndFriction(
+  prevConfig: SpringConfigWithOrigamiTensionAndFriction
+): SpringConfig {
   const { tension, friction, ...rest } = prevConfig;
   return {
     ...rest,
@@ -41,8 +53,18 @@ function makeConfigFromOrigamiTensionAndFriction(prevConfig) {
         : dampingFromOrigamiNode(friction),
   };
 }
-
-function makeConfigFromBouncinessAndSpeed(prevConfig) {
+interface SpringConfigWithBouncinessAndSpeed {
+  bounciness: Adaptable<number>;
+  mass: Adaptable<number>;
+  speed: Adaptable<number>;
+  overshootClamping: Adaptable<number> | boolean;
+  restSpeedThreshold: Adaptable<number>;
+  restDisplacementThreshold: Adaptable<number>;
+  toValue: Adaptable<number>;
+}
+function makeConfigFromBouncinessAndSpeed(
+  prevConfig: SpringConfigWithBouncinessAndSpeed
+): SpringConfig {
   const { bounciness, speed, ...rest } = prevConfig;
   if (typeof bounciness === 'number' && typeof speed === 'number') {
     return fromBouncinessAndSpeedNumbers(bounciness, speed, rest);
@@ -180,7 +202,7 @@ function fromBouncinessAndSpeedNumbers(bounciness, speed, rest) {
   };
 }
 
-function makeDefaultConfig() {
+function makeDefaultConfig(): SpringConfig {
   return {
     stiffness: new AnimatedValue(100),
     mass: new AnimatedValue(1),

@@ -2,14 +2,15 @@ import invariant from 'fbjs/lib/invariant';
 import { val } from '../val';
 import AnimatedNode from './AnimatedNode';
 import InternalAnimatedValue from './InternalAnimatedValue';
+import { Value, Adaptable } from '../types';
 
-class AnimatedBlock extends AnimatedNode {
+class AnimatedBlock<T extends Value> extends AnimatedNode<T> {
   _array;
 
   constructor(array) {
     invariant(
-      array.every(el => el instanceof AnimatedNode),
-      `Reanimated: Animated.block node argument should be an array with elements of type AnimatedNode. One or more of them are not AnimatedNodes`
+      array.every((el) => el instanceof AnimatedNode),
+      'Reanimated: Animated.block node argument should be an array with elements of type AnimatedNode. One or more of them are not AnimatedNodes'
     );
     super({ type: 'block', block: array }, array);
     this._array = array;
@@ -21,14 +22,17 @@ class AnimatedBlock extends AnimatedNode {
 
   __onEvaluate() {
     let result;
-    this._array.forEach(node => {
+    this._array.forEach((node) => {
       result = val(node);
     });
     return result;
   }
 }
 
-export function createAnimatedBlock(items) {
+export function createAnimatedBlock<
+  T1 extends Value = number,
+  T2 extends Value = any
+>(items: ReadonlyArray<Adaptable<T2>>): AnimatedNode<T1> {
   return adapt(items);
 }
 
@@ -47,6 +51,6 @@ function nodify(v) {
 
 export function adapt(v) {
   return Array.isArray(v)
-    ? new AnimatedBlock(v.map(node => adapt(node)))
+    ? new AnimatedBlock(v.map((node) => adapt(node)))
     : nodify(v);
 }

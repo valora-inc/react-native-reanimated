@@ -2,8 +2,9 @@ import AnimatedNode from './AnimatedNode';
 import { val } from '../val';
 import ReanimatedModule from '../ReanimatedModule';
 import invariant from 'fbjs/lib/invariant';
+import { Value, Adaptable } from '../types';
 
-function sanitizeValue(value) {
+function sanitizeValue(value: null | undefined | string | number | boolean) {
   return value === null || value === undefined || typeof value === 'string'
     ? value
     : Number(value);
@@ -15,28 +16,32 @@ function initializeConstantValues() {
   if (CONSTANT_VALUES.size !== 0) {
     return;
   }
-  [0, -1, 1, -2, 2].forEach(v =>
+  [0, -1, 1, -2, 2].forEach((v) =>
     CONSTANT_VALUES.set(v, new InternalAnimatedValue(v, true))
   );
+}
+
+interface InternalAnimatedValue<T extends Value> {
+  _startingValue;
+  _value;
+  _animation;
+  _constant;
 }
 
 /**
  * This class has been made internal in order to omit dependencies' cycles which
  * were caused by imperative setValue and interpolate – they are currently exposed with AnimatedValue.js
  */
-export default class InternalAnimatedValue extends AnimatedNode {
-  static valueForConstant(number) {
+class InternalAnimatedValue<T extends Value> extends AnimatedNode<T> {
+  static valueForConstant(number: number) {
     initializeConstantValues();
     return (
       CONSTANT_VALUES.get(number) || new InternalAnimatedValue(number, true)
     );
   }
 
-  constructor(value, constant = false) {
-    invariant(
-      value !== null,
-      'Animated.Value cannot be set to the null'
-    );
+  constructor(value?: T, constant = false) {
+    invariant(value !== null, 'Animated.Value cannot be set to the null');
     super({ type: 'value', value: sanitizeValue(value) });
     this._startingValue = this._value = value;
     this._animation = null;
@@ -48,7 +53,7 @@ export default class InternalAnimatedValue extends AnimatedNode {
       if (ReanimatedModule.getValue) {
         ReanimatedModule.getValue(
           this.__nodeID,
-          val => (this.__nodeConfig.value = val)
+          (val) => (this.__nodeConfig.value = val)
         );
       } else {
         this.__nodeConfig.value = this.__getValue();
@@ -78,7 +83,7 @@ export default class InternalAnimatedValue extends AnimatedNode {
   }
 
   // AnimatedValue will override this method to modify the value of a native node.
-  setValue(value) {
+  setValue(value: Adaptable<T>): void {
     this.__detachAnimation(this._animation);
     this._updateValue(value);
   }
@@ -88,3 +93,4 @@ export default class InternalAnimatedValue extends AnimatedNode {
     this.__forceUpdateCache(value);
   }
 }
+export default InternalAnimatedValue;

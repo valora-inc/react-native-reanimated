@@ -2,6 +2,7 @@ import invariant from 'fbjs/lib/invariant';
 import ReanimatedEventEmitter from '../ReanimatedEventEmitter';
 import { val } from '../val';
 import AnimatedNode from './AnimatedNode';
+import { Value } from '../types';
 
 const NODE_MAPPING = new Map();
 
@@ -10,14 +11,14 @@ function listener(data) {
   node && node._callback(data.args);
 }
 
-class AnimatedCall extends AnimatedNode {
+class AnimatedCall<T extends Value> extends AnimatedNode<T> {
   _callback;
   _args;
 
   constructor(args, jsFunction) {
     invariant(
-      args.every(el => el instanceof AnimatedNode),
-      `Reanimated: Animated.call node args should be an array with elements of type AnimatedNode. One or more of them are not AnimatedNodes`
+      args.every((el) => el instanceof AnimatedNode),
+      'Reanimated: Animated.call node args should be an array with elements of type AnimatedNode. One or more of them are not AnimatedNodes'
     );
     super({ type: 'call', input: args }, args);
     this._callback = jsFunction;
@@ -43,13 +44,17 @@ class AnimatedCall extends AnimatedNode {
     }
     super.__detach();
   }
-
+  // @ts-ignore
   __onEvaluate() {
     this._callback(this._args.map(val));
     return 0;
   }
 }
 
-export function createAnimatedCall(args, func) {
+export function createAnimatedCall<T extends Value>(
+  args: ReadonlyArray<T | AnimatedNode<T>>,
+  func: (args: ReadonlyArray<T>) => void
+): AnimatedNode<0> {
+  // @ts-ignore
   return new AnimatedCall(args, func);
 }

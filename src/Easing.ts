@@ -10,6 +10,8 @@ import {
   divide,
 } from './base';
 import AnimatedBezier from './core/AnimatedBezier';
+import { Adaptable } from './types';
+import AnimatedNode from './core/AnimatedNode';
 
 /**
  * The `Easing` module implements common easing functions. This module is used
@@ -56,6 +58,8 @@ import AnimatedBezier from './core/AnimatedBezier';
  * - [`inOut`](docs/easing.html#inout) makes any easing function symmetrical
  * - [`out`](docs/easing.html#out) runs an easing function backwards
  */
+export type EasingFunction = (value: Adaptable<number>) => AnimatedNode<number>;
+
 export default class Easing {
   /**
    * A linear function, `f(t) = t`. Position correlates to elapsed time one to
@@ -63,9 +67,9 @@ export default class Easing {
    *
    * http://cubic-bezier.com/#0,0,1,1
    */
-  static linear(t) {
+  static linear = (t): EasingFunction => {
     return t;
-  }
+  };
 
   /**
    * A simple inertial interaction, similar to an object slowly accelerating to
@@ -73,9 +77,9 @@ export default class Easing {
    *
    * http://cubic-bezier.com/#.42,0,1,1
    */
-  static ease(t) {
+  static ease: EasingFunction = (t) => {
     return new AnimatedBezier(t, 0.42, 0, 1, 1);
-  }
+  };
 
   /**
    * A quadratic function, `f(t) = t * t`. Position equals the square of elapsed
@@ -83,9 +87,9 @@ export default class Easing {
    *
    * http://easings.net/#easeInQuad
    */
-  static quad(t) {
+  static quad: EasingFunction = (t) => {
     return multiply(t, t);
-  }
+  };
 
   /**
    * A cubic function, `f(t) = t * t * t`. Position equals the cube of elapsed
@@ -93,9 +97,9 @@ export default class Easing {
    *
    * http://easings.net/#easeInCubic
    */
-  static cubic(t) {
+  static cubic: EasingFunction = (t) => {
     return multiply(t, t, t);
-  }
+  };
 
   /**
    * A power function. Position is equal to the Nth power of elapsed time.
@@ -103,8 +107,8 @@ export default class Easing {
    * n = 4: http://easings.net/#easeInQuart
    * n = 5: http://easings.net/#easeInQuint
    */
-  static poly(n) {
-    return t => pow(t, n);
+  static poly(n: Adaptable<number>): EasingFunction {
+    return (t) => pow(t, n);
   }
 
   /**
@@ -112,27 +116,27 @@ export default class Easing {
    *
    * http://easings.net/#easeInSine
    */
-  static sin(t) {
+  static sin: EasingFunction = (t) => {
     return sub(1, cos(multiply(t, Math.PI, 0.5)));
-  }
+  };
 
   /**
    * A circular function.
    *
    * http://easings.net/#easeInCirc
    */
-  static circle(t) {
+  static circle: EasingFunction = (t) => {
     return sub(1, sqrt(sub(1, multiply(t, t))));
-  }
+  };
 
   /**
    * An exponential function.
    *
    * http://easings.net/#easeInExpo
    */
-  static exp(t) {
+  static exp: EasingFunction = (t) => {
     return pow(2, multiply(10, sub(t, 1)));
-  }
+  };
 
   /**
    * A simple elastic interaction, similar to a spring oscillating back and
@@ -144,9 +148,9 @@ export default class Easing {
    *
    * http://easings.net/#easeInElastic
    */
-  static elastic(bounciness = 1) {
+  static elastic(bounciness: number = 1): EasingFunction {
     const p = bounciness * Math.PI;
-    return t =>
+    return (t) =>
       sub(
         1,
         multiply(pow(cos(multiply(t, Math.PI, 0.5)), 3), cos(multiply(t, p)))
@@ -161,11 +165,11 @@ export default class Easing {
    *
    * - http://tiny.cc/back_default (s = 1.70158, default)
    */
-  static back(s) {
+  static back(s?: number): EasingFunction {
     if (s === undefined) {
       s = 1.70158;
     }
-    return t => multiply(t, t, sub(multiply(add(s, 1), t), s));
+    return (t) => multiply(t, t, sub(multiply(add(s, 1), t), s));
   }
 
   /**
@@ -173,8 +177,8 @@ export default class Easing {
    *
    * http://easings.net/#easeInBounce
    */
-  static bounce(t) {
-    const sq = v => multiply(7.5625, v, v);
+  static bounce: EasingFunction = (t) => {
+    const sq = (v) => multiply(7.5625, v, v);
     return cond(
       lessThan(t, 1 / 2.75),
       sq(t),
@@ -188,7 +192,7 @@ export default class Easing {
         )
       )
     );
-  }
+  };
 
   /**
    * Provides a cubic bezier curve, equivalent to CSS Transitions'
@@ -197,22 +201,27 @@ export default class Easing {
    * A useful tool to visualize cubic bezier curves can be found at
    * http://cubic-bezier.com/
    */
-  static bezier(x1, y1, x2, y2) {
-    return t => new AnimatedBezier(t, x1, y1, x2, y2);
+  static bezier(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number
+  ): EasingFunction {
+    return (t) => new AnimatedBezier(t, x1, y1, x2, y2);
   }
 
   /**
    * Runs an easing function forwards.
    */
-  static in(easing) {
+  static in(easing: EasingFunction): EasingFunction {
     return easing;
   }
 
   /**
    * Runs an easing function backwards.
    */
-  static out(easing) {
-    return t => sub(1, easing(sub(1, t)));
+  static out(easing: EasingFunction): EasingFunction {
+    return (t) => sub(1, easing(sub(1, t)));
   }
 
   /**
@@ -220,8 +229,8 @@ export default class Easing {
    * forwards for half of the duration, then backwards for the rest of the
    * duration.
    */
-  static inOut(easing) {
-    return t =>
+  static inOut(easing: EasingFunction): EasingFunction {
+    return (t) =>
       cond(
         lessThan(t, 0.5),
         divide(easing(multiply(t, 2)), 2),

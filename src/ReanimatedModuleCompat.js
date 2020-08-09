@@ -1,5 +1,5 @@
 export default {
-  async disconnectNodeFromView() {
+  async disconnectNodeFromView(nodeID, viewTag) {
     // noop
   },
   async attachEvent(viewTag, eventName, nodeID) {
@@ -14,13 +14,15 @@ export default {
   async dropNode(nodeID) {
     // noop
   },
-  async configureProps() {
+  async configureProps(nativePropsArray, uiPropsArray) {
     // noop
   },
-  async disconnectNodes() {
+  async disconnectNodes(parentID, childID) {
     // noop
   },
   async animateNextTransition() {
-    console.warn('Reanimated: animateNextTransition is unimplemented on current platform');
+    console.warn(
+      'Reanimated: animateNextTransition is unimplemented on current platform'
+    );
   },
 };

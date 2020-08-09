@@ -1,9 +1,11 @@
 import AnimatedNode from './AnimatedNode';
 import invariant from 'fbjs/lib/invariant';
 import { val } from '../val';
-import { adapt } from '../core/AnimatedBlock';
+import { adapt } from './AnimatedBlock';
+import { Value, Adaptable } from '../types';
+import AnimatedValue from './AnimatedValue';
 
-class AnimatedSet extends AnimatedNode {
+class AnimatedSet<T extends Value> extends AnimatedNode<T> {
   _what;
   _value;
 
@@ -33,6 +35,9 @@ class AnimatedSet extends AnimatedNode {
   }
 }
 
-export function createAnimatedSet(what, value) {
+export function createAnimatedSet<T extends Value>(
+  what: AnimatedValue<T>,
+  value: Adaptable<T>
+): AnimatedNode<T> {
   return new AnimatedSet(what, adapt(value));
 }

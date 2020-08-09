@@ -2,11 +2,14 @@ import invariant from 'fbjs/lib/invariant';
 import AnimatedNode, { getCallID, setCallID } from './AnimatedNode';
 import AnimatedClock from './AnimatedClock';
 import { val } from '../val';
+import { Value } from '../types';
 
-export class AnimatedParam extends AnimatedNode {
+export class AnimatedParam<T extends Value | undefined> extends AnimatedNode<
+  T
+> {
   argsStack = [];
   _prevCallID;
-  
+
   constructor() {
     super({ type: 'param' }, []);
     this.__attach();
@@ -22,7 +25,8 @@ export class AnimatedParam extends AnimatedNode {
   }
 
   _getTopNode() {
-    if (this.argsStack.length === 0) throw new Error(`param: Invocation failed because argsStack is empty`);
+    if (this.argsStack.length === 0)
+      throw new Error('param: Invocation failed because argsStack is empty');
     const top = this.argsStack[this.argsStack.length - 1];
     return top;
   }
@@ -35,10 +39,12 @@ export class AnimatedParam extends AnimatedNode {
       top.setValue(value);
       setCallID(callID);
     } else {
-      throw new Error(`param: setValue(${value}) failed because the top element has no known method for updating it's current value.`)
+      throw new Error(
+        `param: setValue(${value}) failed because the top element has no known method for updating it's current value.`
+      );
     }
   }
-  
+
   __onEvaluate() {
     const callID = getCallID();
     setCallID(this._prevCallID);
@@ -70,7 +76,7 @@ export class AnimatedParam extends AnimatedNode {
     const node = this._getTopNode();
 
     if (node instanceof AnimatedParam) {
-      return node.isRunning()
+      return node.isRunning();
     }
     invariant(
       node instanceof AnimatedClock,

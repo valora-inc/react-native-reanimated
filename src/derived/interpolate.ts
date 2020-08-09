@@ -13,6 +13,7 @@ import invariant from 'fbjs/lib/invariant';
 import AnimatedNode from '../core/AnimatedNode';
 import { createAnimatedCond as cond } from '../core/AnimatedCond';
 import { createAnimatedFunction as proc } from '../core/AnimatedFunction';
+import type { Adaptable } from '../types';
 
 const interpolateInternalSingleProc = proc(function(
   value,
@@ -51,11 +52,11 @@ function interpolateInternal(value, inputRange, outputRange, offset = 0) {
   );
 }
 
-export const Extrapolate = {
-  EXTEND: 'extend',
-  CLAMP: 'clamp',
-  IDENTITY: 'identity',
-};
+export enum Extrapolate {
+  EXTEND = 'extend',
+  CLAMP = 'clamp',
+  IDENTITY = 'identity',
+}
 
 function checkNonDecreasing(name, arr) {
   for (let i = 1; i < arr.length; ++i) {
@@ -102,14 +103,21 @@ function convertToRadians(outputRange) {
   }
 }
 
-export default function interpolate(value, config) {
-  const {
-    inputRange,
-    outputRange,
-    extrapolate = Extrapolate.EXTEND,
-    extrapolateLeft,
-    extrapolateRight,
-  } = config;
+export interface InterpolationConfig {
+  inputRange: ReadonlyArray<Adaptable<number>>;
+  outputRange: ReadonlyArray<Adaptable<number>>;
+  extrapolate?: Extrapolate;
+  extrapolateLeft?: Extrapolate;
+  extrapolateRight?: Extrapolate;
+}
+
+export default function interpolate(value: Adaptable<number>, {
+  inputRange,
+  outputRange,
+  extrapolate = Extrapolate.EXTEND,
+  extrapolateLeft,
+  extrapolateRight,
+}: InterpolationConfig) {
 
   checkMinElements('inputRange', inputRange);
   checkValidNumbers('inputRange', inputRange);

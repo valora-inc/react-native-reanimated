@@ -1,12 +1,13 @@
 import ReanimatedModule from '../ReanimatedModule';
 import { Platform } from 'react-native';
+import { Value } from '../types';
 
 const UPDATED_NODES = [];
 
 let loopID = 1;
 let propUpdatesEnqueued = null;
 let nodeCount = 0;
-let callID = "";
+let callID = '';
 
 export function getCallID() {
   return callID;
@@ -17,7 +18,14 @@ export function setCallID(nextCallID) {
 }
 
 function sanitizeConfig(config) {
-  if (Platform.OS === 'web' || Platform.OS === 'windows' || Platform.OS === 'macos' || ['undefined', 'string', 'function', 'boolean', 'number'].includes(typeof config)) {
+  if (
+    Platform.OS === 'web' ||
+    Platform.OS === 'windows' ||
+    Platform.OS === 'macos' ||
+    ['undefined', 'string', 'function', 'boolean', 'number'].includes(
+      typeof config
+    )
+  ) {
     return config;
   } else if (Array.isArray(config)) {
     return config.map(sanitizeConfig);
@@ -38,7 +46,7 @@ function sanitizeConfig(config) {
 
 function runPropUpdates() {
   const visitedNodes = new Set();
-  const findAndUpdateNodes = node => {
+  const findAndUpdateNodes = (node) => {
     if (!node) {
       console.warn('findAndUpdateNodes was passed a nullish node');
       return;
@@ -69,19 +77,28 @@ function runPropUpdates() {
   loopID += 1;
 }
 
-export default class AnimatedNode {
-
+interface AnimatedNode<T extends Value> {
   __nodeID;
-  __lastLoopID = { "": -1 };
-  __memoizedValue = { "": null };
+  __nodeConfig;
+  __initialized;
+  __inputNodes;
+}
+
+abstract class AnimatedNode<T> {
+  __nodeID;
+  __lastLoopID = { '': -1 };
+  __memoizedValue = { '': null };
   __children = [];
 
-  constructor(nodeConfig, inputNodes) {
+  constructor(
+    nodeConfig: object,
+    inputNodes?: ReadonlyArray<AnimatedNode<any>>
+  ) {
     this.__nodeID = ++nodeCount;
     this.__nodeConfig = sanitizeConfig(nodeConfig);
     this.__initialized = false;
     this.__inputNodes =
-      inputNodes && inputNodes.filter(node => node instanceof AnimatedNode);
+      inputNodes && inputNodes.filter((node) => node instanceof AnimatedNode);
   }
 
   toString() {
@@ -157,9 +174,7 @@ export default class AnimatedNode {
     return this.__initialized;
   }
 
-  __onEvaluate() {
-    throw new Error('Missing implementation of onEvaluate');
-  }
+  abstract __onEvaluate(): T;
 
   __getProps() {
     return this.__getValue();
@@ -212,3 +227,4 @@ export default class AnimatedNode {
     ReanimatedModule.disconnectNodeFromView(this.__nodeID, nativeViewTag);
   }
 }
+export default AnimatedNode;
