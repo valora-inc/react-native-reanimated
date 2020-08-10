@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import React from 'react';
 import { findNodeHandle, Platform, StyleSheet } from 'react-native';
 import ReanimatedEventEmitter from './ReanimatedEventEmitter';
@@ -21,7 +23,7 @@ function dummyListener() {
   // event is used.
 }
 
-export default function createAnimatedComponent(Component) {
+export default function createAnimatedComponent(Component: any): any {
   invariant(
     typeof Component !== 'function' ||
       (Component.prototype && Component.prototype.isReactComponent),
@@ -188,7 +190,7 @@ export default function createAnimatedComponent(Component) {
       this._propsAnimated.setNativeView(this._component);
     }
 
-    _setComponentRef = c => {
+    _setComponentRef = (c) => {
       if (c !== this._component) {
         this._component = c;
       }
@@ -248,9 +250,9 @@ export default function createAnimatedComponent(Component) {
     }
   }
 
-  AnimatedComponent.displayName = `AnimatedComponent(${Component.displayName ||
-    Component.name ||
-    'Component'})`;
+  AnimatedComponent.displayName = `AnimatedComponent(${
+    Component.displayName || Component.name || 'Component'
+  })`;
 
   return AnimatedComponent;
 }

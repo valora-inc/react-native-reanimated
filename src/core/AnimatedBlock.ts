@@ -4,7 +4,7 @@ import AnimatedNode from './AnimatedNode';
 import InternalAnimatedValue from './InternalAnimatedValue';
 import { Value, Adaptable } from '../types';
 
-class AnimatedBlock<T extends Value> extends AnimatedNode<T> {
+class AnimatedBlock<T> extends AnimatedNode<T> {
   _array;
 
   constructor(array) {
@@ -29,10 +29,9 @@ class AnimatedBlock<T extends Value> extends AnimatedNode<T> {
   }
 }
 
-export function createAnimatedBlock<
-  T1 extends Value = number,
-  T2 extends Value = any
->(items: ReadonlyArray<Adaptable<T2>>): AnimatedNode<T1> {
+export function createAnimatedBlock<T1 = number, T2 = any>(
+  items: ReadonlyArray<Adaptable<T2>>
+): AnimatedNode<T1> {
   return adapt(items);
 }
 

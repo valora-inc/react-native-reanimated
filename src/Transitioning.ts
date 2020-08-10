@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component, ComponentClass, createContext } from 'react';
 import { View, findNodeHandle } from 'react-native';
 import ReanimatedModule from './ReanimatedModule';
 
-const TransitioningContext = React.createContext();
+const TransitioningContext = createContext();
 
 function configFromProps(type, props) {
   const config = { type };
@@ -31,10 +31,10 @@ function configFromProps(type, props) {
  * react native we could rewrite it using hooks or `static contextType` API.
  */
 function wrapTransitioningContext(Comp) {
-  return props => {
+  return (props) => {
     return (
       <TransitioningContext.Consumer>
-        {context => <Comp context={context} {...props} />}
+        {(context) => <Comp context={context} {...props} />}
       </TransitioningContext.Consumer>
     );
   };
@@ -141,6 +141,42 @@ function createTransitioningComponent(Component) {
     }
   }
   return Wrapped;
+}
+export interface TransitionProps {
+  delayMs?: number;
+  durationMs?: number;
+  interpolation?: 'linear' | 'easeIn' | 'easeOut' | 'easeInOut';
+  propagation?: 'top' | 'bottom' | 'left' | 'right';
+}
+
+export interface TransitioningViewProps extends ViewProps {
+  transition: ReactNode;
+}
+
+export class TransitioningView extends Component<TransitioningViewProps> {
+  animateNextTransition(): void;
+}
+
+export class Transitioning extends Component {
+  static View: typeof TransitioningView;
+}
+
+export interface TransitionInOutProps extends TransitionProps {
+  type?:
+    | 'fade'
+    | 'scale'
+    | 'slide-top'
+    | 'slide-bottom'
+    | 'slide-right'
+    | 'slide-left';
+}
+
+export class Transition extends Component {
+  static In: ComponentClass<TransitionInOutProps>;
+  static Out: ComponentClass<TransitionInOutProps>;
+  static Change: ComponentClass<TransitionProps>;
+  static Together: ComponentClass<{}>;
+  static Sequence: ComponentClass<{}>;
 }
 
 const Transitioning = {

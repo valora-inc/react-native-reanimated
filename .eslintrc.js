@@ -8,6 +8,7 @@ module.exports = {
   // },
   rules: {
     indent: ['error', 2],
+    'no-bitwise': ['error', { allow: ['>>>', '<<'] }],
     //   'import/no-unresolved': 2,
     //   'react/jsx-uses-vars': 2,
     //   'react/jsx-uses-react': 2,

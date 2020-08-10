@@ -2,6 +2,8 @@ import { processColor } from 'react-native';
 import { round } from '../base';
 import color from './color';
 import interpolate, { Extrapolate } from './interpolate';
+import AnimatedNode from '../core/AnimatedNode';
+import { Adaptable } from '../types';
 
 function red(c) {
   return (c >> 16) & 255;
@@ -27,8 +29,16 @@ function opacity(c) {
  *
  * So, for now you can just use this helper instead.
  */
-export default function interpolateColors(animationValue, options) {
-  const { inputRange, outputColorRange } = options;
+export default function interpolateColors(
+  animationValue: Adaptable<number>,
+  {
+    inputRange,
+    outputColorRange,
+  }: {
+    inputRange: ReadonlyArray<Adaptable<number>>;
+    outputColorRange: (string | number)[];
+  }
+): AnimatedNode<number> {
   const colors = outputColorRange.map(processColor);
 
   const r = round(

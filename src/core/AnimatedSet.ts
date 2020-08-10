@@ -5,7 +5,7 @@ import { adapt } from './AnimatedBlock';
 import { Value, Adaptable } from '../types';
 import AnimatedValue from './AnimatedValue';
 
-class AnimatedSet<T extends Value> extends AnimatedNode<T> {
+class AnimatedSet<T> extends AnimatedNode<T> {
   _what;
   _value;
 

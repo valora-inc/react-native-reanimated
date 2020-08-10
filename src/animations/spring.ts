@@ -22,6 +22,9 @@ import {
 } from '../base';
 import AnimatedValue from '../core/InternalAnimatedValue';
 import { Adaptable } from '../types';
+import AnimatedClock from '../core/AnimatedClock';
+import AnimatedNode from '../core/AnimatedNode';
+import { BackwardCompatibleWrapper } from './backwardCompatibleAnimWrapper';
 
 const MAX_STEPS_MS = 64;
 
@@ -168,7 +171,16 @@ const procSpring = proc(
       }
     )
 );
+export interface AnimationState {
+  finished: AnimatedValue<number>;
+  position: AnimatedValue<number>;
+  time: AnimatedValue<number>;
+}
 
+export interface PhysicsAnimationState extends AnimationState {
+  velocity: AnimatedValue<number>;
+}
+export type SpringState = PhysicsAnimationState;
 export interface SpringConfig {
   damping: Adaptable<number>;
   mass: Adaptable<number>;
@@ -178,8 +190,14 @@ export interface SpringConfig {
   restDisplacementThreshold: Adaptable<number>;
   toValue: Adaptable<number>;
 }
+
+export function spring(
+  node: AnimatedNode<number>,
+  config: SpringConfig
+): BackwardCompatibleWrapper;
+
 export default (
-  clock,
+  clock: AnimatedClock,
   {
     finished,
     velocity,
@@ -187,7 +205,7 @@ export default (
     time,
     // @ts-ignore
     prevPosition,
-  },
+  }: SpringState,
   {
     toValue,
     damping,
@@ -197,7 +215,7 @@ export default (
     restDisplacementThreshold,
     restSpeedThreshold,
   }: SpringConfig
-) =>
+): AnimatedNode<number> =>
   procSpring(
     finished,
     velocity,

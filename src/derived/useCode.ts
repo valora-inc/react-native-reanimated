@@ -1,5 +1,7 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { always, block } from '../base';
+import { Nullable } from '../types';
+import AnimatedNode from '../core/AnimatedNode';
 
 /**
  * @callback NodeFactory
@@ -12,10 +14,13 @@ import { always, block } from '../base';
  * @param {NodeFactory} nodeFactory Function to build the node to run.
  * @param dependencies Array of dependencies. Refresh the node on changes.
  */
-export default function useCode(nodeFactory, dependencies) {
-  if (!(React.useEffect instanceof Function)) return;
-
-  React.useEffect(() => {
+export default function useCode(
+  nodeFactory: () =>
+    | Nullable<AnimatedNode<number>[] | AnimatedNode<number>>
+    | boolean,
+  dependencies: any[]
+): void {
+  useEffect(() => {
     // check and correct 1st parameter
     if (!(nodeFactory instanceof Function)) {
       console.warn(
@@ -23,6 +28,7 @@ export default function useCode(nodeFactory, dependencies) {
       );
 
       const node = nodeFactory;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       nodeFactory = () => node;
     }
 

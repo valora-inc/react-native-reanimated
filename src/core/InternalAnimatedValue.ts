@@ -21,7 +21,7 @@ function initializeConstantValues() {
   );
 }
 
-interface InternalAnimatedValue<T extends Value> {
+interface InternalAnimatedValue<T> {
   _startingValue;
   _value;
   _animation;
@@ -32,7 +32,7 @@ interface InternalAnimatedValue<T extends Value> {
  * This class has been made internal in order to omit dependencies' cycles which
  * were caused by imperative setValue and interpolate – they are currently exposed with AnimatedValue.js
  */
-class InternalAnimatedValue<T extends Value> extends AnimatedNode<T> {
+class InternalAnimatedValue<T> extends AnimatedNode<T> {
   static valueForConstant(number: number) {
     initializeConstantValues();
     return (

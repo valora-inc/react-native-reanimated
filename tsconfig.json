@@ -3,7 +3,8 @@
     "allowJs": true,
     "target": "es5",
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "jsx": "react"
   },
   "declarations": false,
   "include": ["src/**/*"],

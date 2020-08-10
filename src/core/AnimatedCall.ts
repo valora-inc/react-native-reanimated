@@ -11,7 +11,7 @@ function listener(data) {
   node && node._callback(data.args);
 }
 
-class AnimatedCall<T extends Value> extends AnimatedNode<T> {
+class AnimatedCall<T> extends AnimatedNode<T> {
   _callback;
   _args;
 
@@ -51,7 +51,7 @@ class AnimatedCall<T extends Value> extends AnimatedNode<T> {
   }
 }
 
-export function createAnimatedCall<T extends Value>(
+export function createAnimatedCall<T>(
   args: ReadonlyArray<T | AnimatedNode<T>>,
   func: (args: ReadonlyArray<T>) => void
 ): AnimatedNode<0> {

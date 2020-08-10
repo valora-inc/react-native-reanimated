@@ -4,7 +4,7 @@ import AnimatedNode from './AnimatedNode';
 import { val } from '../val';
 import { Adaptable, Value } from '../types';
 
-class AnimatedConcat<T extends Value> extends AnimatedNode<T> {
+class AnimatedConcat<T> extends AnimatedNode<T> {
   _input;
 
   constructor(input) {

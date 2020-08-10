@@ -5,7 +5,7 @@ import { val } from '../val';
 import invariant from 'fbjs/lib/invariant';
 import { Adaptable, Value } from '../types';
 
-class AnimatedFunction<T extends Value> extends AnimatedNode<T> {
+class AnimatedFunction<T> extends AnimatedNode<T> {
   _what;
 
   constructor(what, ...params) {

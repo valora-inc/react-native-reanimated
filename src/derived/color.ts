@@ -1,16 +1,26 @@
 import { Platform } from 'react-native';
 
-import { add, cond, concat, lessThan, multiply, round, sub, proc } from '../base';
+import {
+  add,
+  cond,
+  concat,
+  lessThan,
+  multiply,
+  round,
+  sub,
+  proc,
+} from '../base';
 import AnimatedNode from '../core/AnimatedNode';
+import { Adaptable } from '../types';
 
-const procColor = proc(function(r, g, b, a) {
+const procColor = proc(function (r, g, b, a) {
   const color = add(
     multiply(a, 1 << 24),
     multiply(round(r), 1 << 16),
     multiply(round(g), 1 << 8),
     round(b)
   );
-  
+
   if (Platform.OS === 'android') {
     // on Android color is represented as signed 32 bit int
     return cond(
@@ -22,7 +32,12 @@ const procColor = proc(function(r, g, b, a) {
   return color;
 });
 
-export default function color(r, g, b, a = 1) {
+export default function color(
+  r: Adaptable<number>,
+  g: Adaptable<number>,
+  b: Adaptable<number>,
+  a: Adaptable<number> = 1
+): AnimatedNode<number> {
   if (Platform.OS === 'web') {
     // doesn't support bit shifting
     return concat('rgba(', r, ',', g, ',', b, ',', a, ')');

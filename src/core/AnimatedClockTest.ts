@@ -1,4 +1,5 @@
 import AnimatedNode from './AnimatedNode';
+import AnimatedClock from './AnimatedClock';
 
 class AnimatedClockTest extends AnimatedNode {
   _clockNode;
@@ -17,6 +18,8 @@ class AnimatedClockTest extends AnimatedNode {
   }
 }
 
-export function createAnimatedClockTest(clock) {
+export function createAnimatedClockTest(
+  clock: AnimatedClock
+): AnimatedNode<0 | 1> {
   return new AnimatedClockTest(clock);
 }

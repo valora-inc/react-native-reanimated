@@ -13,7 +13,7 @@ import { Value } from '../types';
  * @param [callback] - after callback
  */
 
-export function evaluateOnce<T extends Value>(
+export function evaluateOnce<T>(
   node: AnimatedNode<T>,
   input: AnimatedNode<T> | AnimatedNode<T>[] = [],
   callback?: () => void

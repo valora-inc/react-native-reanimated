@@ -1,6 +1,12 @@
 import useCode from '../derived/useCode';
 import AnimatedNode from './AnimatedNode';
 
+type CodeProps = {
+  exec?: AnimatedNode<number>;
+  children?: () => AnimatedNode<number>;
+  dependencies: any[];
+};
+
 function assertNodesNotNull(code, children, exec) {
   if (!code) {
     const error = !children
@@ -13,7 +19,7 @@ function assertNodesNotNull(code, children, exec) {
   }
 }
 
-function Code({ exec, children, dependencies = [] }) {
+function Code({ exec, children, dependencies = [] }: CodeProps) {
   const nodes = children || exec;
 
   let code = null;

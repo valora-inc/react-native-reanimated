@@ -77,7 +77,7 @@ function runPropUpdates() {
   loopID += 1;
 }
 
-interface AnimatedNode<T extends Value> {
+interface AnimatedNode<T> {
   __nodeID;
   __nodeConfig;
   __initialized;

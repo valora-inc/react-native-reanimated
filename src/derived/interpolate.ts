@@ -15,7 +15,7 @@ import { createAnimatedCond as cond } from '../core/AnimatedCond';
 import { createAnimatedFunction as proc } from '../core/AnimatedFunction';
 import type { Adaptable } from '../types';
 
-const interpolateInternalSingleProc = proc(function(
+const interpolateInternalSingleProc = proc(function (
   value,
   inS,
   inE,
@@ -111,14 +111,16 @@ export interface InterpolationConfig {
   extrapolateRight?: Extrapolate;
 }
 
-export default function interpolate(value: Adaptable<number>, {
-  inputRange,
-  outputRange,
-  extrapolate = Extrapolate.EXTEND,
-  extrapolateLeft,
-  extrapolateRight,
-}: InterpolationConfig) {
-
+export default function interpolate(
+  value: Adaptable<number>,
+  {
+    inputRange,
+    outputRange,
+    extrapolate = Extrapolate.EXTEND,
+    extrapolateLeft,
+    extrapolateRight,
+  }: InterpolationConfig
+): AnimatedNode<number> {
   checkMinElements('inputRange', inputRange);
   checkValidNumbers('inputRange', inputRange);
   checkMinElements('outputRange', outputRange);

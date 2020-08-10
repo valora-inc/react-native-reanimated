@@ -9,8 +9,15 @@ import {
   greaterOrEq,
   proc,
 } from '../base';
+import AnimatedClock from '../core/AnimatedClock';
+import AnimatedValue from '../core/AnimatedValue';
+import { AnimationState } from './spring';
+import { Adaptable } from '../types';
+import { EasingFunction } from '../Easing';
+import AnimatedNode from '../core/AnimatedNode';
+import { BackwardCompatibleWrapper } from './backwardCompatibleAnimWrapper';
 
-const internalTiming = proc(function(
+const internalTiming = proc(function (
   clock,
   time,
   frameTime,
@@ -49,8 +56,26 @@ const internalTiming = proc(function(
     set(state.time, clock),
   ]);
 });
+export interface TimingState extends AnimationState {
+  frameTime: AnimatedValue<number>;
+}
 
-export default function(clock, state, config) {
+export interface TimingConfig {
+  toValue: Adaptable<number>;
+  duration: Adaptable<number>;
+  easing: EasingFunction;
+}
+
+export function timing(
+  node: AnimatedNode<number>,
+  config: TimingConfig
+): BackwardCompatibleWrapper;
+
+export default function (
+  clock: AnimatedClock,
+  state: TimingState,
+  config: TimingConfig
+): AnimatedNode<number> {
   if (config.duration === 0) {
     // when duration is zero we end the timing immediately
     return block([set(state.position, config.toValue), set(state.finished, 1)]);

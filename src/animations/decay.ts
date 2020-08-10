@@ -11,6 +11,11 @@ import {
   proc,
   abs,
 } from '../base';
+import { PhysicsAnimationState } from './spring';
+import AnimatedClock from '../core/AnimatedClock';
+import { Adaptable } from '../types';
+import AnimatedNode from '../core/AnimatedNode';
+import { BackwardCompatibleWrapper } from './backwardCompatibleAnimWrapper';
 
 const VELOCITY_EPS = 5;
 
@@ -44,9 +49,19 @@ const procDecay = proc(
   (clock, time, velocity, position, finished, deceleration) =>
     decay(clock, { time, velocity, position, finished }, { deceleration })
 );
+export interface DecayConfig {
+  deceleration: Adaptable<number>;
+}
+export type DecayState = PhysicsAnimationState;
+
+export function decay(
+  node: AnimatedNode<number>,
+  config: DecayConfig
+): BackwardCompatibleWrapper;
 
 export default (
-  clock,
-  { time, velocity, position, finished },
-  { deceleration }
-) => procDecay(clock, time, velocity, position, finished, deceleration);
+  clock: AnimatedClock,
+  { time, velocity, position, finished }: DecayState,
+  { deceleration }: DecayConfig
+): AnimatedNode<number> =>
+  procDecay(clock, time, velocity, position, finished, deceleration);

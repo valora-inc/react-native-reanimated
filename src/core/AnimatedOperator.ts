@@ -62,7 +62,7 @@ const OPERATIONS = {
   neq: infix((a, b) => a != b),
 };
 
-class AnimatedOperator<T extends Value> extends AnimatedNode<T> {
+class AnimatedOperator<T> extends AnimatedNode<T> {
   _input;
   _op;
   _operation;

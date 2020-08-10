@@ -7,6 +7,7 @@ import { createAnimatedAlways } from './AnimatedAlways';
 
 import invariant from 'fbjs/lib/invariant';
 import createEventObjectProxyPolyfill from './createEventObjectProxyPolyfill';
+import { Adaptable } from '../types';
 
 function sanitizeArgMapping(argMapping) {
   // Find animated values in `argMapping` and create an array representing their
@@ -14,8 +15,12 @@ function sanitizeArgMapping(argMapping) {
   const eventMappings = [];
   const alwaysNodes = [];
 
-  const getNode = node => {
-    if (Platform.OS === 'web' || Platform.OS === 'windows' || Platform.OS === 'macos') {
+  const getNode = (node) => {
+    if (
+      Platform.OS === 'web' ||
+      Platform.OS === 'windows' ||
+      Platform.OS === 'macos'
+    ) {
       return node;
     }
     return node.__nodeID;
@@ -48,7 +53,7 @@ function sanitizeArgMapping(argMapping) {
     traverse(ev, []);
   } else if (typeof ev === 'function') {
     const proxyHandler = {
-      get: function(target, name) {
+      get: function (target, name) {
         if (name === '__isProxy') {
           return true;
         }
@@ -57,7 +62,7 @@ function sanitizeArgMapping(argMapping) {
         }
         return target[name];
       },
-      set: function(target, prop, value) {
+      set: function (target, prop, value) {
         if (prop === '__val') {
           target[prop] = value;
           return true;
@@ -116,7 +121,22 @@ export default class AnimatedEvent extends AnimatedNode {
     this.__detach();
   }
 }
+// the return type for `event` is a lie, but it's the same lie that
+// react-native makes within Animated
+export type Mapping = { [key: string]: Mapping } | Adaptable<any>;
+type EventArgFunc<T> = (arg: T) => AnimatedNode<number>;
+type EventMapping<T> = T extends object
+  ? { [K in keyof T]?: EventMapping<T[K]> | EventArgFunc<T[K]> }
+  : Adaptable<T> | EventArgFunc<T>;
+type EventMappingArray<T> = T extends Array<any>
+  ? { [I in keyof T]: EventMapping<T[I]> }
+  : [EventMapping<T>];
 
-export function createAnimatedEvent(argMapping, config) {
+export function createAnimatedEvent<T>(
+  argMapping: T extends never
+    ? ReadonlyArray<Mapping>
+    : Readonly<EventMappingArray<T>>,
+  config?: {}
+): (...args: any[]) => void {
   return new AnimatedEvent(argMapping, config);
 }

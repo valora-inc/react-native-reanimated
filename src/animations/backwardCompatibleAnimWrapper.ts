@@ -10,6 +10,10 @@ import {
 } from '../base';
 import Clock from '../core/AnimatedClock';
 import { evaluateOnce } from '../derived/evaluateOnce';
+export interface BackwardCompatibleWrapper {
+  start: (callback?: (data: { finished: boolean }) => any) => void;
+  stop: () => void;
+}
 
 function createOldAnimationObject(node, animationStateDefaults, value, config) {
   const newClock = new Clock();
@@ -20,7 +24,7 @@ function createOldAnimationObject(node, animationStateDefaults, value, config) {
   let wasStopped = false;
   let animationCallback;
   const animation = {
-    start: currentAnimationCallback => {
+    start: (currentAnimationCallback) => {
       animationCallback = currentAnimationCallback;
       if (isStarted) {
         animationCallback && animationCallback({ finished: false });
@@ -91,7 +95,7 @@ function createOldAnimationObject(node, animationStateDefaults, value, config) {
       wasStopped = true;
       evaluateOnce(set(currentState.finished, 1), currentState.finished);
     },
-    __stopImmediately_testOnly: result => {
+    __stopImmediately_testOnly: (result) => {
       animation.stop();
       isDone = result;
       value.__detachAnimation(animation);
@@ -107,7 +111,7 @@ function createOldAnimationObject(node, animationStateDefaults, value, config) {
 export default function backwardsCompatibleAnimWrapper(
   node,
   animationStateDefaults
-) {
+): BackwardCompatibleWrapper {
   return (clock, state, config) => {
     if (config !== undefined) {
       return node(clock, state, config);

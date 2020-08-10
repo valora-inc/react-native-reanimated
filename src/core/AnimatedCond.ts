@@ -4,7 +4,7 @@ import { val } from '../val';
 import AnimatedNode from './AnimatedNode';
 import { Value, Adaptable } from '../types';
 
-class AnimatedCond<T extends Value> extends AnimatedNode<T> {
+class AnimatedCond<T> extends AnimatedNode<T> {
   _condition;
   _ifBlock;
   _elseBlock;
@@ -49,10 +49,7 @@ class AnimatedCond<T extends Value> extends AnimatedNode<T> {
   }
 }
 
-export function createAnimatedCond<
-  T1 extends Value = number,
-  T2 extends Value = number
->(
+export function createAnimatedCond<T1 = number, T2 = number>(
   cond: Adaptable<number>,
   ifBlock: Adaptable<T1>,
   elseBlock?: Adaptable<T2>

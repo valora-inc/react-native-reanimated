@@ -4,14 +4,14 @@ import AnimatedNode from './core/AnimatedNode';
 
 const operator = createAnimatedOperator;
 
-type BinaryOperator<T extends Value = number> = (
+type BinaryOperator<T = number> = (
   left: Adaptable<number>,
   right: Adaptable<number>
 ) => AnimatedNode<T>;
 
 type UnaryOperator = (value: Adaptable<number>) => AnimatedNode<number>;
 
-type MultiOperator<T extends Value = number> = (
+type MultiOperator<T = number> = (
   a: Adaptable<number>,
   b: Adaptable<number>,
   ...others: Adaptable<number>[]
@@ -29,7 +29,7 @@ export const sin: UnaryOperator = operator('sin');
 export const cos: UnaryOperator = operator('cos');
 export const exp: UnaryOperator = operator('exp');
 export const round: UnaryOperator = operator('round');
-export const lessThan = operator('lessThan');
+export const lessThan: BinaryOperator<0 | 1> = operator('lessThan');
 export const eq: BinaryOperator<0 | 1> = operator('eq');
 export const greaterThan: BinaryOperator<0 | 1> = operator('greaterThan');
 export const lessOrEq: BinaryOperator<0 | 1> = operator('lessOrEq');
